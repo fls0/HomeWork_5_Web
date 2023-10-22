@@ -65,12 +65,10 @@ async def parse_data(data):
             if rate['currency'] == 'USD':
                 usd = {rate['currency']: {"sale": rate['saleRate'],
                               "purchase": rate['purchaseRate']}}
-                print(usd)
                 currency_dict[date].update(usd)
             if rate['currency'] == 'EUR':
                 eur = {rate['currency']: {"sale": rate['saleRate'],
                                            "purchase": rate['purchaseRate']}}
-                print(eur)
                 currency_dict[date].update(eur)
         result.append(currency_dict)
     if not result:
