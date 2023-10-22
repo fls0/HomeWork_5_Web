@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 
 parser = argparse.ArgumentParser(description="Currency exchange")
-parser.add_argument("--days", "-d", help="Days", type=int, default = 1)
+parser.add_argument("--days", "-d", help="Days", type=int, default=1)
 
 args = vars(parser.parse_args())
 
@@ -61,13 +61,17 @@ async def parse_data(data):
         date = value.get('date')
         exchange = value.get('exchangeRate')
         for rate in exchange:
-            if rate['currency'] == 'USD' or rate['currency'] == 'EUR':
-                res = {date: {"sale": rate['saleRate'],
-                              "purchase": rate['purchaseRate']}}
-                currency_dict.update(res)
-                res.clear()
-    result.append(currency_dict)
-    if not currency_dict:
+            if rate['currency'] == 'USD':
+                usd = {date: {rate['currency']: {"sale": rate['saleRate'],
+                              "purchase": rate['purchaseRate']}}}
+                print(usd)
+                result.append(usd)
+            if rate['currency'] == 'EUR':
+                eur = {date: {rate['currency']: {"sale": rate['saleRate'],
+                                           "purchase": rate['purchaseRate']}}}
+                print(eur)
+                result.append(eur)
+    if not result:
         return print('На сьогоднішній день ще не має курсів валют')
     print(result)
     return result
@@ -77,8 +81,9 @@ async def main():
     dates = [await date_for_fetch(days)]
     urls = [await prepare_urls(date) for date in dates]
     data = [await fetch_data(url) for url in urls]
-    result = [parse_data(unparsed_data) for unparsed_data in data]
-    return await asyncio.gather(*result, return_exceptions=True)
+    result = [await parse_data(unparsed_data) for unparsed_data in data]
+    # return await asyncio.gather(*result, return_exceptions=True)
+    return result
 
 
 if __name__ == '__main__':
