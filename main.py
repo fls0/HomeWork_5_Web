@@ -56,21 +56,23 @@ async def fetch_data(urls):
 
 async def parse_data(data):
     result = []
-    currency_dict = {}
+    # currency_dict = {}
     for value in data:
         date = value.get('date')
+        currency_dict = {date: {}}
         exchange = value.get('exchangeRate')
         for rate in exchange:
             if rate['currency'] == 'USD':
-                usd = {date: {rate['currency']: {"sale": rate['saleRate'],
-                              "purchase": rate['purchaseRate']}}}
+                usd = {rate['currency']: {"sale": rate['saleRate'],
+                              "purchase": rate['purchaseRate']}}
                 print(usd)
-                result.append(usd)
+                currency_dict[date].update(usd)
             if rate['currency'] == 'EUR':
-                eur = {date: {rate['currency']: {"sale": rate['saleRate'],
-                                           "purchase": rate['purchaseRate']}}}
+                eur = {rate['currency']: {"sale": rate['saleRate'],
+                                           "purchase": rate['purchaseRate']}}
                 print(eur)
-                result.append(eur)
+                currency_dict[date].update(eur)
+        result.append(currency_dict)
     if not result:
         return print('На сьогоднішній день ще не має курсів валют')
     print(result)
